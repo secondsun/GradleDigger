@@ -20,7 +20,7 @@ public class Main {
     public static void main (String args[]) throws URISyntaxException {
         GradleConnector connector = GradleConnector.newConnector();
         
-        File projectDir = new File(Main.class.getClassLoader().getResource("projects/android-gradle-helloworld/files/app").toURI());
+        File projectDir = new File(Main.class.getClassLoader().getResource("projects/android-gradle-helloworld/files").toURI());
         connector.forProjectDirectory(projectDir);
         ProjectConnection projectConnection = connector.connect();
         AndroidProject  projectModel = projectConnection.getModel(AndroidProject.class);

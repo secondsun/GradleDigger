@@ -24,9 +24,8 @@ tmp/
 
 .gradle/
 build/
-
+local.properties
 ########### Android ###########
 
 gen/
 lint.xml
-/src/main/resources/projects/android-gradle-helloworld/files/.nb-gradle/private/
