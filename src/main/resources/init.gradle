@@ -1,3 +1,14 @@
+initscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'net.saga:GradleDigger:0.1-SNAPSHOT'
+    }
+}
+
 allprojects {
+    System.out.println('applying sidecar')
     apply plugin: org.jboss.feedhenry.GradleSidecarPlugin
 }

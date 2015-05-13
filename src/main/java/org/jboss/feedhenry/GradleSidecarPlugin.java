@@ -7,9 +7,7 @@ import org.gradle.api.plugins.PluginManager;
 import org.gradle.tooling.provider.model.ToolingModelBuilder;
 import org.gradle.tooling.provider.model.ToolingModelBuilderRegistry;
 import com.android.build.gradle.AppPlugin;
-import com.android.build.gradle.BasePlugin;
 import com.android.build.gradle.LibraryPlugin;
-import org.gradle.api.plugins.UnknownPluginException;
 
 public class GradleSidecarPlugin implements Plugin<Project> {
 

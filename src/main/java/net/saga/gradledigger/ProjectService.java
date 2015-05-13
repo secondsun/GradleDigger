@@ -38,9 +38,9 @@ public class ProjectService {
                     .forProjectDirectory(projectDir)
                     .connect();
 
-            GradleProject projectModel;
+            GradleProject projectModel = null;
             try {
-                projectModel = projectConnection.model(GradleProject.class).withArguments("--init-script", getClass().getResource("init.gradle").toURI().toString()).get();
+                projectModel = projectConnection.model(GradleProject.class).withArguments("--init-script", getClass().getClassLoader().getResource("init.gradle").toURI().toString()).get();
             } catch (URISyntaxException ex) {
                 throw new RuntimeException(ex);
             }
