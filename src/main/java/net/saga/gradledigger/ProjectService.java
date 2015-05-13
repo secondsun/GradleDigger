@@ -8,8 +8,11 @@ package net.saga.gradledigger;
 import com.android.builder.model.AndroidProject;
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.UnknownModelException;
@@ -31,10 +34,16 @@ public class ProjectService {
         ProjectConnection projectConnection = null;
         try {
             projectConnection = GradleConnector.newConnector()
+                    .useBuildDistribution()
                     .forProjectDirectory(projectDir)
                     .connect();
 
-            GradleProject projectModel = projectConnection.getModel(GradleProject.class);
+            GradleProject projectModel;
+            try {
+                projectModel = projectConnection.model(GradleProject.class).withArguments("--init-script", getClass().getResource("init.gradle").toURI().toString()).get();
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            }
 
             projectConnection.close();
             if (projectModelClass.equals(GradleProject.class)) {
