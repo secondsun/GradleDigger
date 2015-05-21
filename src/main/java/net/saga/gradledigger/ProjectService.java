@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.ModelBuilder;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
@@ -21,6 +22,8 @@ import org.gradle.tooling.model.GradleProject;
  */
 public class ProjectService {
 
+    private static final String DEBUG_ARGS = "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006";
+    
     public Set getSubProjects(URI projectRoot) {
         return getSubProjects(projectRoot, GradleProject.class);
     }
@@ -54,7 +57,12 @@ public class ProjectService {
                                 .connect();
                         T childModel;
                         try {
-                            childModel = childProjectConnection.model(projectModelClass).setJvmArguments("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006").withArguments("--init-script", getClass().getClassLoader().getResource("init.gradle").toURI().toString()).get();
+                            ModelBuilder<T> builder = childProjectConnection.model(projectModelClass).withArguments("--init-script", getClass().getClassLoader().getResource("init.gradle").toURI().toString());
+                            if (useDebug()) {
+                                builder.setJvmArguments(DEBUG_ARGS);
+                            }
+                            childModel = builder.get();
+                            
                         } catch (URISyntaxException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -72,6 +80,10 @@ public class ProjectService {
                 projectConnection.close();
             }
         }
+    }
+
+    private boolean useDebug() {
+        return Boolean.parseBoolean(System.getProperty("maven.debug", Boolean.FALSE.toString()));
     }
 
 }
