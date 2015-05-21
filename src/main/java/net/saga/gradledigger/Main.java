@@ -18,8 +18,8 @@ import org.gradle.tooling.ProjectConnection;
  */
 public class Main {
     public static void main (String args[]) throws URISyntaxException {
-        GradleConnector connector = GradleConnector.newConnector();
         
+        GradleConnector connector = GradleConnector.newConnector();
         File projectDir = new File(Main.class.getClassLoader().getResource("projects/android-gradle-helloworld/files").toURI());
         connector.forProjectDirectory(projectDir);
         ProjectConnection projectConnection = connector.connect();

@@ -5,14 +5,11 @@
  */
 package net.saga.gradledigger;
 
-import com.android.builder.model.AndroidProject;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.UnknownModelException;
@@ -34,7 +31,7 @@ public class ProjectService {
         ProjectConnection projectConnection = null;
         try {
             projectConnection = GradleConnector.newConnector()
-                    .useBuildDistribution()
+                    .useGradleVersion("2.2.1")
                     .forProjectDirectory(projectDir)
                     .connect();
 
@@ -55,7 +52,13 @@ public class ProjectService {
                         childProjectConnection = GradleConnector.newConnector()
                                 .forProjectDirectory(model.getBuildScript().getSourceFile().getParentFile())
                                 .connect();
-                        models.add(childProjectConnection.getModel(projectModelClass));
+                        T childModel;
+                        try {
+                            childModel = childProjectConnection.model(projectModelClass).setJvmArguments("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006").withArguments("--init-script", getClass().getClassLoader().getResource("init.gradle").toURI().toString()).get();
+                        } catch (URISyntaxException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        models.add(childModel);
                         
                     } catch (UnknownModelException ignore) {
                     } finally {

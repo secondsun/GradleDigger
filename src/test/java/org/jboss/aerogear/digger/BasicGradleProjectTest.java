@@ -55,7 +55,9 @@ public class BasicGradleProjectTest {
         URI projectRoot = Main.class.getClassLoader().getResource(HELLO_WORLD_PROJECT_ROOT).toURI();
         Set<SidecarAndroidModel> projects = service.getSubProjects(projectRoot, SidecarAndroidModel.class);
         SidecarAndroidModel project = projects.iterator().next();
-        System.out.println(printTree(project, 10));
+        assertNotNull(project);
+        assertEquals("19.1.0", project.getBuildToolsVersion());
+        
         
     }
 

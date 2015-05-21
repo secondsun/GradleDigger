@@ -3,7 +3,6 @@ package org.jboss.feedhenry;
 import javax.inject.Inject;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.PluginManager;
 import org.gradle.tooling.provider.model.ToolingModelBuilder;
 import org.gradle.tooling.provider.model.ToolingModelBuilderRegistry;
 import com.android.build.gradle.AppPlugin;
@@ -12,7 +11,9 @@ import com.android.build.gradle.LibraryPlugin;
 public class GradleSidecarPlugin implements Plugin<Project> {
 
     private final ToolingModelBuilderRegistry registry;
-
+    private static final String ANDROID_APP_PLUGIN_ID = "com.android.application";
+    
+    
     @Inject
     public GradleSidecarPlugin(ToolingModelBuilderRegistry registry) {
         this.registry = registry;
@@ -25,8 +26,6 @@ public class GradleSidecarPlugin implements Plugin<Project> {
 
     private static class SidecarAndroidModelBuilder implements ToolingModelBuilder {
 
-        private static final String ANDROID_APP_PLUGIN_ID = AppPlugin.class.getName();
-        
         public SidecarAndroidModelBuilder() {
         }
 
@@ -37,11 +36,15 @@ public class GradleSidecarPlugin implements Plugin<Project> {
 
         @Override
         public Object buildAll(String modelName, Project project) {
-            PluginManager pluginManager = project.getPluginManager();
-            if (pluginManager.hasPlugin(ANDROID_APP_PLUGIN_ID)) {
-                final AppPlugin appPlugin = (AppPlugin) pluginManager.findPlugin(ANDROID_APP_PLUGIN_ID);
-                return new DefaultSidecarAndroidModel();
-            } else if (pluginManager.hasPlugin(LibraryPlugin.class.getName())) {
+            
+            if (project.getPlugins().hasPlugin(ANDROID_APP_PLUGIN_ID)) {
+                Object appPlugin = project.getPlugins().findPlugin(ANDROID_APP_PLUGIN_ID);
+                
+                DefaultSidecarAndroidModel.Builder builder = new DefaultSidecarAndroidModel.Builder();
+                builder.buildToolsVersion(appPlugin.extension.buildToolsRevision.toString());
+                
+                return new DefaultSidecarAndroidModel(builder);
+            } else if (project.getPlugins().hasPlugin(LibraryPlugin.class.getName())) {
                 throw new IllegalStateException("Not Supported Yet");
             }
             return null;
